@@ -1,36 +1,30 @@
-import request from 'supertest';
-import { app } from '../../app';
+import { JwtManager } from '@ramtickets/common/dist';
+import mongoose from 'mongoose';
 
-async function signUp(
-  email: string,
-  password: string,
-  expectedResponse: number
-) {
-  const response = await request(app)
-    .post('/api/users/signup')
-    .send({
-      email,
-      password,
-    })
-    .expect(expectedResponse);
-
-  return response;
+interface Payload {
+  id: string;
+  email: string;
+  password: string;
+  toJSON: () => {
+    id: string;
+    email: string;
+  };
 }
 
-async function signIn(
-  email: string,
-  password: string,
-  expectedResponse: number
-) {
-  const response = await request(app)
-    .post('/api/users/signin')
-    .send({
-      email,
-      password,
-    })
-    .expect(expectedResponse);
+export const getNewValidUser = (email: string = 'r@r.com') => ({
+  id: new mongoose.Types.ObjectId().toHexString(),
+  email,
+  password: '1234567',
+  toJSON: function () {
+    return { id: this.id, email: this.email };
+  },
+});
 
-  return response;
+function signIn(payload: Payload) {
+  const token = JwtManager.sign(payload);
+  const sessionJson = JSON.stringify({ jwt: token });
+  const base64 = Buffer.from(sessionJson).toString('base64');
+  return [`session=${base64}; Path=/; Secure; HttpOnly;`];
 }
 
-export default { signUp, signIn };
+export default { signIn };
