@@ -1,7 +1,5 @@
 import express from 'express';
-import { currentUser } from '../middleware/currentUser';
-import { requireAuth } from '../middleware/requireAuth';
-import { JwtManager } from '../services/jwt';
+import { currentUser, requireAuth } from '@ramtickets/common/dist';
 
 export const currentUserRouter = express.Router();
 

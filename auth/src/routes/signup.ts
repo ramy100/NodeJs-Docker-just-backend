@@ -1,10 +1,8 @@
 import express, { NextFunction, Response } from 'express';
-import { BadRequestError } from '../errors/BadRequestError';
 import { User } from '../models/User';
 import { registerValidationRules } from '../utils/inputValidation';
-import { validate } from '../middleware/validate';
 import { Request } from 'express-validator/src/base';
-import { JwtManager } from '../services/jwt';
+import { BadRequestError, JwtManager, validate } from '@ramtickets/common/dist';
 export const signUpRouter = express.Router();
 
 signUpRouter.post(

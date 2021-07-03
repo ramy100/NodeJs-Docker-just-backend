@@ -1,10 +1,12 @@
+import {
+  BadRequestError,
+  validate,
+  JwtManager,
+  PasswordManager,
+} from '@ramtickets/common/dist';
 import express, { NextFunction, Request, Response } from 'express';
-import { validate } from '../middleware/validate';
 import { User } from '../models/User';
 import { loginValidationRules } from '../utils/inputValidation';
-import { BadRequestError } from '../errors/BadRequestError';
-import { PasswordManager } from '../services/password';
-import { JwtManager } from '../services/jwt';
 export const singInRouter = express.Router();
 
 singInRouter.post(

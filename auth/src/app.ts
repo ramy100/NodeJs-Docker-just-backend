@@ -4,9 +4,8 @@ import { currentUserRouter } from './routes/currentUser';
 import { singInRouter } from './routes/signIn';
 import { signOutRouter } from './routes/signout';
 import { signUpRouter } from './routes/signup';
-import { errorHandler } from './middleware/error-handler';
-import { NotFound } from './errors/notFound';
 import cookieSession from 'cookie-session';
+import { errorHandler, NotFound } from '@ramtickets/common/dist';
 
 export const app = express();
 app.set('trust proxy', true);

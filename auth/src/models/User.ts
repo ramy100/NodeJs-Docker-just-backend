@@ -1,6 +1,5 @@
-import { selectFields } from 'express-validator/src/select-fields';
+import { PasswordManager } from '@ramtickets/common/dist';
 import mongoose from 'mongoose';
-import { PasswordManager } from '../services/password';
 
 export interface UserPayload {
   email: string;
