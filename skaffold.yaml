@@ -26,3 +26,11 @@ build:
     #         dest: .
     #       - src: '**/*.css'
     #         dest: .
+    - image: tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
