@@ -1,7 +1,5 @@
-import { NotFound, requireAuth, validate } from '@ramtickets/common/dist';
 import { NextFunction, Request, Response, Router } from 'express';
 import { Ticket } from '../models/ticket';
-import { createTicketValidationRules } from '../utils/inputValidation';
 
 export const indexTicketsRouter = Router();
 

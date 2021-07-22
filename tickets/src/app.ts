@@ -23,7 +23,7 @@ app.use(currentUser);
 app.use('/api/tickets', newTicketRouter);
 app.use('/api/tickets', showTicketRouter);
 app.use('/api/tickets', indexTicketsRouter);
-app.use('/api/tickets/update', updateTicketRouter);
+app.use('/api/tickets', updateTicketRouter);
 
 app.all('*', async (req, res, next) => {
   next(new NotFound());

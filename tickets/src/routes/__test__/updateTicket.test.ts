@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../../app';
+import { natsWrapper } from '../../natsWrapper';
 import auth, { getNewValidUser } from '../../test/helpers/auth';
 import { createTicket } from '../../test/helpers/ticket';
 
@@ -20,6 +21,15 @@ describe('update Tickets', () => {
       .set('Cookie', auth.signIn(user))
       .send({});
     expect(res.statusCode).toEqual(200);
+  });
+  it('publish update event upon update', async () => {
+    const user = getNewValidUser();
+    const createdTicket = await createTicket({ userId: user.id });
+    await request(app)
+      .post(`/api/tickets/update/${createdTicket.id}`)
+      .set('Cookie', auth.signIn(user))
+      .send({});
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
   });
 
   it('denies non-owner to update', async () => {

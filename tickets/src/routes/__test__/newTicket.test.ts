@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import auth, { getNewValidUser } from '../../test/helpers/auth';
 import { Ticket } from '../../models/ticket';
+import { natsWrapper } from '../../natsWrapper';
 
 describe('create Tickets', () => {
   it('has route for /api/tickets/new', async () => {
@@ -99,5 +100,15 @@ describe('create Tickets', () => {
 
     tickets = await Ticket.find({});
     expect(tickets.length).toEqual(1);
+  });
+
+  it('publishs created ticket event upon creation', async () => {
+    const validTicket = { title: 'iam a valid title 25', price: 1 };
+    await request(app)
+      .post('/api/tickets/new')
+      .set('Cookie', auth.signIn(getNewValidUser()))
+      .send(validTicket)
+      .expect(200);
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
   });
 });
