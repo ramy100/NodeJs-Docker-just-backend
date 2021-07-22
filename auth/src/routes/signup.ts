@@ -14,7 +14,7 @@ signUpRouter.post(
     try {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        next(new BadRequestError('Email in use'));
+        return next(new BadRequestError('Email in use'));
       }
       const user = User.build({ email, password });
       await user.save();
