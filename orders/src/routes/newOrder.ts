@@ -6,10 +6,10 @@ import {
   validate,
 } from '@ramtickets/common/dist';
 import { NextFunction, Request, Response, Router } from 'express';
+import { OrderCreatedPublisher } from '../events/publishers/orderCreatedPublisher';
 import { Order } from '../models/order';
 import { Ticket } from '../models/ticket';
-// import { TicketCreatedPublisher } from '../events/publishers/ticketCreatedPublisher';
-// import { natsWrapper } from '../natsWrapper';
+import { natsWrapper } from '../natsWrapper';
 import { createOrderValidationRules } from '../utils/inputValidation';
 
 const EXPIRATION_WINDOW_SECONDS = 15 * 60;
@@ -38,6 +38,14 @@ newOrderRouter.post(
         ticket,
       });
       const newOrder = await order.save();
+      const { id, status, userId } = newOrder;
+      new OrderCreatedPublisher(natsWrapper.client).publish({
+        id,
+        status,
+        userId,
+        ticket: { id: ticket.id, price: ticket.price },
+        expiresAt: newOrder.expiresAt.toISOString(),
+      });
       res.send(newOrder.toJSON());
     } catch (error) {
       console.log(error);
