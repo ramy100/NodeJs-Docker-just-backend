@@ -38,3 +38,10 @@ spec:
                 name: orders-srv
                 port:
                   number: 4000
+          - path: /api/payments/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 4000
