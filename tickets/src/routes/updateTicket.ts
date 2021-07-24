@@ -12,39 +12,28 @@ import { updateTicketValidationRules } from '../utils/inputValidation';
 
 export const updateTicketRouter = Router();
 
-updateTicketRouter.post(
-  '/update/:id',
+updateTicketRouter.put(
+  '/:id',
   requireAuth,
   updateTicketValidationRules,
   validate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await Ticket.findOneAndUpdate(
-        { _id: req.params.id },
-        req.body,
-        { new: true, useFindAndModify: true },
-        (err, doc) => {
-          if (err) return next(err);
-          if (!doc) return next(new NotFound());
-          if (doc.userId !== req.currentUser?.id)
-            return next(new UnAuthorizedError());
-          const { id, title, price, userId } = doc.toJSON();
-          new TicketUpdatedPublisher(natsWrapper.client).publish({
-            id,
-            title,
-            price,
-            userId,
-          });
-          return res.send(
-            JSON.stringify({
-              id,
-              title,
-              price,
-              userId,
-            })
-          );
-        }
-      );
+      const ticket = await Ticket.findById(req.params.id);
+      if (!ticket) return next(new NotFound());
+      if (ticket.userId !== req.currentUser!.id)
+        return next(new UnAuthorizedError());
+      ticket.set({ ...req.body });
+      await ticket.save();
+      const { id, title, price, userId, version } = ticket;
+      new TicketUpdatedPublisher(natsWrapper.client).publish({
+        id,
+        title,
+        price,
+        userId,
+        version,
+      });
+      return res.send(ticket);
     } catch (error) {
       next(error);
     }

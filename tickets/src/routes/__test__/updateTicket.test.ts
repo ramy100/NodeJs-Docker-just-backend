@@ -9,7 +9,7 @@ describe('update Tickets', () => {
   it('allows only logged in users', async () => {
     const createdTicket = await createTicket();
     const res = await request(app)
-      .post(`/api/tickets/update/${createdTicket.id}`)
+      .put(`/api/tickets/${createdTicket.id}`)
       .send({});
     expect(res.statusCode).toEqual(401);
   });
@@ -17,7 +17,7 @@ describe('update Tickets', () => {
     const user = getNewValidUser();
     const createdTicket = await createTicket({ userId: user.id });
     const res = await request(app)
-      .post(`/api/tickets/update/${createdTicket.id}`)
+      .put(`/api/tickets/${createdTicket.id}`)
       .set('Cookie', auth.signIn(user))
       .send({});
     expect(res.statusCode).toEqual(200);
@@ -26,7 +26,7 @@ describe('update Tickets', () => {
     const user = getNewValidUser();
     const createdTicket = await createTicket({ userId: user.id });
     await request(app)
-      .post(`/api/tickets/update/${createdTicket.id}`)
+      .put(`/api/tickets/${createdTicket.id}`)
       .set('Cookie', auth.signIn(user))
       .send({});
     expect(natsWrapper.client.publish).toHaveBeenCalled();
@@ -37,7 +37,7 @@ describe('update Tickets', () => {
     const id = new mongoose.Types.ObjectId().toHexString();
     const createdTicket = await createTicket({ userId: id });
     const res = await request(app)
-      .post(`/api/tickets/update/${createdTicket.id}`)
+      .put(`/api/tickets/${createdTicket.id}`)
       .set('Cookie', auth.signIn(user))
       .send({});
     expect(res.statusCode).toEqual(401);
@@ -46,7 +46,7 @@ describe('update Tickets', () => {
   it('returns 404 if ticket not found', async () => {
     const id = new mongoose.Types.ObjectId().toHexString();
     const res = await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', auth.signIn(getNewValidUser()))
       .send({ price: 5 });
     expect(res.statusCode).toEqual(404);
@@ -62,21 +62,21 @@ describe('update Tickets', () => {
 
     let updateValues1 = { price: 5 };
     const res = await request(app)
-      .post(`/api/tickets/update/${newTicket.id}`)
+      .put(`/api/tickets/${newTicket.id}`)
       .set('Cookie', cookie)
       .send(updateValues1);
     expect(JSON.parse(res.text)).toHaveProperty('price', updateValues1.price);
 
     let updateValues2 = { title: 'valid title' };
     const res2 = await request(app)
-      .post(`/api/tickets/update/${newTicket.id}`)
+      .put(`/api/tickets/${newTicket.id}`)
       .set('Cookie', cookie)
       .send(updateValues2);
     expect(JSON.parse(res2.text)).toHaveProperty('title', updateValues2.title);
 
     let updateValues3 = { title: 'valid title3', price: 33 };
     const res3 = await request(app)
-      .post(`/api/tickets/update/${newTicket.id}`)
+      .put(`/api/tickets/${newTicket.id}`)
       .set('Cookie', cookie)
       .send(updateValues3);
     expect(JSON.parse(res3.text)).toHaveProperty('title', updateValues3.title);
@@ -88,42 +88,42 @@ describe('update Tickets', () => {
     const cookie = auth.signIn(getNewValidUser());
 
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ price: 'hi' })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ price: -1 })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ title: '-1' })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ title: '1' })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ title: null })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ title: 0 })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ price: null })
       .expect(400);
     await request(app)
-      .post(`/api/tickets/update/${id}`)
+      .put(`/api/tickets/${id}`)
       .set('Cookie', cookie)
       .send({ price: 0 })
       .expect(400);

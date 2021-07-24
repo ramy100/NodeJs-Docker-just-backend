@@ -5,7 +5,6 @@ export const createTicketValidationRules = [
     ignore: ' -',
   }),
   check('title', "title does'nt look good").not().isNumeric(),
-  check('price').isNumeric(),
   check('price').isFloat({ min: 1 }),
 ];
 

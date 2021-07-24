@@ -45,6 +45,7 @@ newOrderRouter.post(
         userId,
         ticket: { id: ticket.id, price: ticket.price },
         expiresAt: newOrder.expiresAt.toISOString(),
+        version: newOrder.version,
       });
       res.send(newOrder.toJSON());
     } catch (error) {

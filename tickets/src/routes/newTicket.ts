@@ -8,7 +8,7 @@ import { createTicketValidationRules } from '../utils/inputValidation';
 export const newTicketRouter = Router();
 
 newTicketRouter.post(
-  '/new',
+  '/',
   requireAuth,
   createTicketValidationRules,
   validate,
@@ -16,12 +16,13 @@ newTicketRouter.post(
     const ticket = Ticket.build({ userId: req.currentUser!.id, ...req.body });
     try {
       await ticket.save();
-      const { id, title, price, userId } = ticket.toJSON();
+      const { id, title, price, userId, version } = ticket.toJSON();
       new TicketCreatedPublisher(natsWrapper.client).publish({
         id,
         title,
         price,
         userId,
+        version,
       });
       res.send({ id, title, price, userId });
     } catch (error) {

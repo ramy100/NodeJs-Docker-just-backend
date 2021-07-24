@@ -65,6 +65,7 @@ describe('New Order', () => {
           price: response.ticket.price,
         },
         expiresAt: response.expiresAt,
+        version: 0,
       }),
       expect.anything()
     );

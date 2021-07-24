@@ -28,6 +28,7 @@ cancelOrderRouter.patch(
       new OrderCancelledPublisher(natsWrapper.client).publish({
         id: order.id,
         ticket: { id: order.ticket.id },
+        version: order.version,
       });
       return res.send(order);
     } catch (error) {

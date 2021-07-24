@@ -1,5 +1,7 @@
 import Mongoose from 'mongoose';
 import { app } from './app';
+import { TicketCreatedListener } from './events/listeners/ticketCreatedListener';
+import { TicketUpdatedListener } from './events/listeners/ticketUpdatedListener';
 import { natsWrapper } from './natsWrapper';
 const port = 4000;
 
@@ -28,6 +30,9 @@ const start = async () => {
     process.once('SIGTERM', function () {
       natsWrapper.client.close();
     });
+
+    new TicketCreatedListener(natsWrapper.client).listen();
+    new TicketUpdatedListener(natsWrapper.client).listen();
 
     await Mongoose.connect(process.env.MONGO_URI!, {
       useNewUrlParser: true,

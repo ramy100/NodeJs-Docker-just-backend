@@ -46,6 +46,7 @@ describe('Cancel orders', () => {
       JSON.stringify({
         id: order.id,
         ticket: { id: ticket.id },
+        version: 1,
       }),
       expect.anything()
     );
