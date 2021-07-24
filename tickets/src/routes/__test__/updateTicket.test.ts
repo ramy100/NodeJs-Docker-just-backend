@@ -128,4 +128,21 @@ describe('update Tickets', () => {
       .send({ price: 0 })
       .expect(400);
   });
+
+  it('it returns 400 bad request if ticket was reserved', async () => {
+    const user = getNewValidUser();
+    const newTicket = await createTicket({
+      price: 1,
+      title: 'valid title',
+      userId: user.id,
+    });
+    newTicket.set({ orderId: 'reserved' });
+    await newTicket.save();
+    const cookie = auth.signIn(user);
+    await request(app)
+      .put(`/api/tickets/${newTicket.id}`)
+      .set('Cookie', cookie)
+      .send({ price: 100 })
+      .expect(400);
+  });
 });

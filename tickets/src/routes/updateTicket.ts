@@ -1,4 +1,5 @@
 import {
+  BadRequestError,
   NotFound,
   requireAuth,
   UnAuthorizedError,
@@ -21,6 +22,8 @@ updateTicketRouter.put(
     try {
       const ticket = await Ticket.findById(req.params.id);
       if (!ticket) return next(new NotFound());
+      if (ticket.orderId)
+        return next(new BadRequestError('Ticket is reserved!'));
       if (ticket.userId !== req.currentUser!.id)
         return next(new UnAuthorizedError());
       ticket.set({ ...req.body });
