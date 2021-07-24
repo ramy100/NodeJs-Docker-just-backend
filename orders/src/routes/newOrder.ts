@@ -12,7 +12,7 @@ import { Ticket } from '../models/ticket';
 import { natsWrapper } from '../natsWrapper';
 import { createOrderValidationRules } from '../utils/inputValidation';
 
-const EXPIRATION_WINDOW_SECONDS = 15 * 60;
+const EXPIRATION_WINDOW_SECONDS = 0.2 * 60;
 
 export const newOrderRouter = Router();
 
