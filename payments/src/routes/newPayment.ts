@@ -30,12 +30,16 @@ newPaymentRouter.post(
         return next(new UnAuthorizedError());
       if (order.status === OrderStatus.Canceled)
         return next(new BadRequestError('Order was cancelled'));
+      if (order.status === OrderStatus.Complete)
+        return next(new BadRequestError('Order is paid for'));
       const charge = await stripe.charges.create({
         currency: 'usd',
         amount: order.price * 100,
         source: token,
       });
       const payment = Payment.build({ orderId, stripeId: charge.id });
+      order.set({ status: OrderStatus.Complete });
+      await order.save();
       await payment.save();
       new PaymentCreatedPublisher(natsWrapper.client).publish({
         id: payment.id,

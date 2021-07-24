@@ -19,18 +19,15 @@ export class OrderExpiredListener extends Listener<ExpirationcompleteEvent> {
       const { orderId } = data;
       const order = await Order.findById(orderId).populate('ticket');
       if (!order) throw new Error('order no found!');
-      if (order.status === OrderStatus.Complete) return msg.ack();
+      if (order.status === OrderStatus.Complete) {
+        msg.ack();
+        throw new Error('order already paid');
+      }
       order.set({ status: OrderStatus.Canceled });
       await order.save();
-      const { id, ticket, version } = order;
-      await new OrderCancelledPublisher(natsWrapper.client).publish({
-        id,
-        ticket: { id: ticket.id },
-        version,
-      });
       msg.ack();
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   }
 }

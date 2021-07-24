@@ -13,8 +13,8 @@ export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
   queueGroupName = queueGroupName;
   async onMessage(data: PaymentCreatedEvent['data'], msg: Message) {
     try {
-      const { id } = data;
-      const order = await Order.findById(id);
+      const { id, orderId } = data;
+      const order = await Order.findById(orderId);
       if (!order) throw new Error('Order not found');
       if (order.status === OrderStatus.Complete) {
         msg.ack();

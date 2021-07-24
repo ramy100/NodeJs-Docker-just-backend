@@ -2,6 +2,7 @@ import Mongoose from 'mongoose';
 import { app } from './app';
 import { OrderCancelledListener } from './events/listeners/orderCancelledListener';
 import { OrderCreatedListener } from './events/listeners/orderCreatedListener';
+import { OrderExpiredListener } from './events/listeners/orderExpiredListener';
 import { natsWrapper } from './natsWrapper';
 
 const port = 4000;
@@ -14,6 +15,7 @@ const start = async () => {
   if (!process.env.NATS_CLIENT_ID)
     throw new Error('NATS_CLIENT_ID must be defined');
   if (!process.env.NATS_URL) throw new Error('NATS_URL must be defined');
+  if (!process.env.STRIPE_KEY) throw new Error('STRIPE_KEY must be defined');
 
   try {
     await natsWrapper.connect(
@@ -34,6 +36,7 @@ const start = async () => {
 
     new OrderCancelledListener(natsWrapper.client).listen();
     new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderExpiredListener(natsWrapper.client).listen();
 
     await Mongoose.connect(process.env.MONGO_URI!, {
       useNewUrlParser: true,
