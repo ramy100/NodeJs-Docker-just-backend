@@ -18,10 +18,11 @@ spec:
             - name: MONGO_URI
               value: 'mongodb://tickets-mongo-srv:27017/tickets'
             - name: JWT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret
-                  key: JWT_KEY
+              value: 'secret-key'
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: jwt-secret
+              #     key: JWT_KEY
             - name: NATS_URL
               value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID

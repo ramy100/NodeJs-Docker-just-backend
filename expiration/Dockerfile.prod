@@ -1,0 +1,23 @@
+# stage 1
+FROM node:18-alpine3.14 as builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm i --legacy-peer-deps
+COPY . .
+RUN npm run build
+
+
+# stage 2
+FROM node:18-alpine3.14
+
+RUN mkdir -p /usr/app
+WORKDIR /usr/app
+#copying package.json from local machine to install prod dependencies only
+COPY package*.json ./
+RUN npm i --only=prod --legacy-peer-deps
+#coping built application from previous stage
+COPY --from=builder /app/dist ./dist
+COPY . .
+
+CMD [ "npm","run", "start:prod" ]
